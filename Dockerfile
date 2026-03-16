@@ -9,4 +9,4 @@ COPY package*.json ./
 # copiar los directorios y ficheros a la carpeta de trabajo
 COPY . .
 
-EXPOSE 5173
+EXPOSE 5174

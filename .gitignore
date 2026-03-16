@@ -8,3 +8,6 @@ node_modules
 *.sln
 *.sw?
 *.tsbuildinfo
+NotasVue3Ts.vue
+CRUD.txt
+CLAUDE.md
