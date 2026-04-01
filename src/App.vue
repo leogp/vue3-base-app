@@ -1,12 +1,9 @@
-<script setup lanLogitech G432g="ts">
-import { RouterLink, RouterView } from 'vue-router'
+<script setup lang="ts">
+import { RouterView } from 'vue-router'
 </script>
 
 <template>
-  <header>
+  <v-app>
     <RouterView />
-  </header>
-  <div >
-  </div>
+  </v-app>
 </template>
-

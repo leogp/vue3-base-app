@@ -5,7 +5,6 @@ export const useAuthStore = defineStore('auth', {
   state: () => ({
     userId: null,
     username: null,
-    password: null,
     email: '',
     firstName: '',
     lastName: '',
@@ -15,10 +14,13 @@ export const useAuthStore = defineStore('auth', {
     refreshToken: ''
   }),
   actions: {
-    async authUser(){
-      const authService = new AuthService(this.username, this.password)
+    logout() {
+      this.$reset()
+    },
+    async authUser(username: string, password: string){
+      const authService = new AuthService(username, password)
       const res = await authService.login()
-      
+
       if(res.success){
         this.userId = res.data.id
         this.username = res.data.username
@@ -27,7 +29,7 @@ export const useAuthStore = defineStore('auth', {
         this.lastName = res.data.lastName
         this.gender = res.data.gender
         this.image = res.data.image
-        this.token = res.data.token
+        this.token = res.data.accessToken
         this.refreshToken = res.data.refreshToken
 
         return '/home'

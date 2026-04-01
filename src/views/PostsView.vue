@@ -1,18 +1,27 @@
 <template>
-  <div>
-    <h1>Posts</h1>
-    <button type="button" class="btn btn-dark mb-2" @click="addPost">New Post</button>
+  <v-container fluid>
+    <v-row align="center" class="mb-4">
+      <v-col>
+        <h1 class="text-h5">Posts</h1>
+      </v-col>
+      <v-col cols="auto">
+        <v-btn color="primary" prepend-icon="mdi-plus" @click="addPost">
+          New Post
+        </v-btn>
+      </v-col>
+    </v-row>
+
     <ThePosts />
-  </div>
+  </v-container>
 </template>
 
 <script setup lang="ts">
-import ThePosts from '@/components/ThePosts.vue';
-import { useRouter } from 'vue-router';
+import ThePosts from '@/components/ThePosts.vue'
+import { useRouter } from 'vue-router'
 
 const router = useRouter()
-const addPost = () => {
-  router.push({name:'form-post'})
-}
 
+const addPost = () => {
+  router.push({ name: 'form-post' })
+}
 </script>

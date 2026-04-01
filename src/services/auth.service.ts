@@ -12,7 +12,6 @@ export class AuthService {
   }
 
   login = async () => {
-    console.log('authservice params', this.url, this.user, this.password)
     try {
       const response = await fetch(this.url, {
         method: 'POST',
@@ -25,18 +24,15 @@ export class AuthService {
           expiresInMins: this.expiresInMins
         })
       })
-      const data = await response.json()
-
-      return {
-        success: true,
-        data: data
+      if (!response.ok) {
+        return { success: false, error: `${response.status}: ${response.statusText}` }
       }
+      const data = await response.json()
+      return { success: true, data: data }
     } catch (error) {
-      console.log('Error login' + error)
-      // TODO: save in error store
       return {
         success: false,
-        error: '401: forbiden'
+        error: '401: Forbidden'
       }
     }
   }

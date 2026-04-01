@@ -11,3 +11,9 @@ node_modules
 NotasVue3Ts.vue
 CRUD.txt
 CLAUDE.md
+.claude
+.agents
+VUE3-BEST-PRACTICES.md
+vue3-base-app.excalidraw
+.playwright-mcp/*
+skills-lock.json
