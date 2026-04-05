@@ -6,7 +6,7 @@
       variant="tonal"
       density="compact"
       class="mb-4"
-      :text="error"
+      :text="error.message"
     />
 
     <v-data-table
@@ -41,7 +41,7 @@
         </v-card-text>
         <v-card-actions>
           <v-spacer />
-          <v-btn variant="text" @click="deleteDialog = false">Cancel</v-btn>
+          <v-btn variant="text" @click="close">Cancel</v-btn>
           <v-btn color="error" variant="flat" @click="executeDelete">Delete</v-btn>
         </v-card-actions>
       </v-card>
@@ -51,17 +51,17 @@
 
 <script setup lang="ts">
 import type { IPost } from '@/interfaces/post'
-import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { postsEndpoint, postEndpoint } from '@/services/api.endpoints'
+import { storeToRefs } from 'pinia'
+import { usePostsStore } from '@/stores/posts'
+import { useConfirmDialog } from '@/composables/useConfirmDialog'
+import { ROUTE_NAMES } from '@/router/routes'
 
-const posts = ref<IPost[]>([])
-const error = ref<string | null>(null)
-const loading = ref(false)
 const router = useRouter()
+const postsStore = usePostsStore()
+const { posts, loading, error } = storeToRefs(postsStore)
 
-const deleteDialog = ref(false)
-const pendingDelete = ref<IPost | null>(null)
+const { isOpen: deleteDialog, pending: pendingDelete, open, close, confirm } = useConfirmDialog<IPost>()
 
 const headers = [
   { title: 'ID', key: 'id', width: '60px', sortable: true },
@@ -71,43 +71,15 @@ const headers = [
   { title: 'Actions', key: 'actions', width: '100px', sortable: false },
 ]
 
-onMounted(async () => {
-  loading.value = true
-  try {
-    const response = await fetch(postsEndpoint)
-    if (!response.ok) throw new Error(response.statusText)
-    posts.value = await response.json()
-  } catch {
-    error.value = 'Failed to load posts.'
-  } finally {
-    loading.value = false
-  }
-})
-
 const edit = (id: number) => {
-  router.push({ name: 'form-post', params: { id } })
+  router.push({ name: ROUTE_NAMES.FORM_POST, params: { id } })
 }
 
 const confirmDelete = (post: IPost) => {
-  pendingDelete.value = post
-  deleteDialog.value = true
+  open(post)
 }
 
 const executeDelete = async () => {
-  if (!pendingDelete.value) return
-  const { id } = pendingDelete.value
-  deleteDialog.value = false
-  try {
-    const response = await fetch(postEndpoint(id), { method: 'DELETE' })
-    if (response.ok) {
-      posts.value = posts.value.filter(post => post.id !== id)
-    } else {
-      error.value = 'Failed to delete post.'
-    }
-  } catch {
-    error.value = 'Network error while deleting post.'
-  } finally {
-    pendingDelete.value = null
-  }
+  await confirm((item) => postsStore.removePost(item.id))
 }
 </script>

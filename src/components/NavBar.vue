@@ -8,7 +8,12 @@
       </v-chip>
 
       <v-btn variant="text" :to="'/home'" exact>Home</v-btn>
-      <v-btn variant="text" :to="{ name: 'posts' }">Posts</v-btn>
+      <v-btn variant="text" :to="{ name: ROUTE_NAMES.POSTS }">Posts</v-btn>
+      <v-btn
+        variant="text"
+        :icon="isDark ? 'mdi-weather-sunny' : 'mdi-weather-night'"
+        @click="handleThemeToggle"
+      />
       <v-btn variant="text" color="error" @click="logout">Logout</v-btn>
     </template>
   </v-app-bar>
@@ -16,12 +21,23 @@
 
 <script setup lang="ts">
 import { useRouter } from 'vue-router'
+import { useTheme as useVuetifyTheme } from 'vuetify'
 import { useAuthStore } from '@/stores/auth'
+import { useTheme } from '@/composables/useTheme'
+import { ROUTE_NAMES } from '@/router/routes'
 import { storeToRefs } from 'pinia'
 
 const authStore = useAuthStore()
 const { firstName } = storeToRefs(authStore)
 const router = useRouter()
+
+const vuetifyTheme = useVuetifyTheme()
+const { isDark, toggle } = useTheme()
+
+const handleThemeToggle = () => {
+  toggle()
+  vuetifyTheme.global.name.value = isDark.value ? 'dark' : 'light'
+}
 
 const logout = () => {
   authStore.logout()

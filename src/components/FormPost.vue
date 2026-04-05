@@ -67,10 +67,10 @@
 </template>
 
 <script setup lang="ts">
-import { computed, reactive, ref, watch } from 'vue'
+import { computed, reactive, watchEffect } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import type { IPost } from '@/interfaces/post'
-import { postsEndpoint, postEndpoint } from '@/services/api.endpoints'
+import { usePostsStore } from '@/stores/posts'
 
 const props = defineProps({
   post: {
@@ -79,9 +79,11 @@ const props = defineProps({
   },
 })
 
+const postsStore = usePostsStore()
+
 const enableSubmit = computed(() => formData.title.trim() !== '' && formData.body.trim() !== '')
-const loading = ref(false)
-const error = ref<string | null>(null)
+const loading = computed(() => postsStore.loading)
+const error = computed(() => postsStore.error?.message ?? null)
 
 const formData = reactive({
   title: '',
@@ -92,53 +94,26 @@ const formData = reactive({
 const { params } = useRoute()
 const router = useRouter()
 
-watch(
-  () => props.post,
-  (post) => {
-    if (post) {
-      formData.title = post.title
-      formData.body = post.body
-      formData.userId = post.userId
-    }
-  },
-)
+watchEffect(() => {
+  if (props.post) {
+    formData.title = props.post.title
+    formData.body = props.post.body
+    formData.userId = props.post.userId
+  }
+})
 
 const save = async () => {
-  error.value = null
-  loading.value = true
+  const payload = { title: formData.title, body: formData.body, userId: formData.userId }
+  let success: boolean
 
-  try {
-    if (params.id) {
-      const response = await fetch(postEndpoint(params.id as string), {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json; charset=UTF-8' },
-        body: JSON.stringify({
-          id: params.id,
-          title: formData.title,
-          body: formData.body,
-          userId: formData.userId,
-        }),
-      })
-      if (!response.ok) throw new Error(response.statusText)
-      await response.json()
-    } else {
-      const response = await fetch(postsEndpoint, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json; charset=UTF-8' },
-        body: JSON.stringify({
-          title: formData.title,
-          body: formData.body,
-          userId: formData.userId,
-        }),
-      })
-      if (!response.ok) throw new Error(response.statusText)
-      await response.json()
-    }
+  if (params.id) {
+    success = await postsStore.editPost(Number(params.id), payload)
+  } else {
+    success = await postsStore.addPost(payload)
+  }
+
+  if (success) {
     router.back()
-  } catch {
-    error.value = 'Failed to save post.'
-  } finally {
-    loading.value = false
   }
 }
 </script>

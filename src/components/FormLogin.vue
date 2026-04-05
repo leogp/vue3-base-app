@@ -79,12 +79,12 @@ const handleLogin = async () => {
   loginError.value = null
   loading.value = true
   try {
-    const navTo = await authStore.authUser(username.value, password.value)
-    if (!navTo) {
-      loginError.value = 'Invalid username or password.'
+    const result = await authStore.authUser(username.value, password.value)
+    if (!result.success) {
+      loginError.value = result.error.message || 'Invalid username or password.'
       return
     }
-    router.push(navTo)
+    router.push(result.redirect)
   } finally {
     loading.value = false
   }
