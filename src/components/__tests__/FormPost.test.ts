@@ -10,7 +10,7 @@ import * as postsService from '@/services/posts.service'
 import { ROUTE_NAMES } from '@/router/routes'
 import type { IPost } from '@/interfaces/post'
 
-function setup(path = '/home/form-post') {
+function setup() {
   const pinia = createPinia()
   setActivePinia(pinia)
 

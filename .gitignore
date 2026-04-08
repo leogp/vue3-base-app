@@ -1,4 +1,5 @@
 node_modules
+dist
 .vscode/*
 !.vscode/extensions.json
 .idea
@@ -8,10 +9,3 @@ node_modules
 *.sln
 *.sw?
 *.tsbuildinfo
-NotasVue3Ts.vue
-CRUD.txt
-CLAUDE.md
-.claude
-.agents
-coverage
-skills-lock.json

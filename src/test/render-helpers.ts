@@ -13,7 +13,7 @@ export function makeVuetify() {
 
 export function makeRouter() {
   return createRouter({
-    history: createMemoryHistory(),
+    history: createMemoryHistory('/'),
     routes: [
       { path: '/', name: ROUTE_NAMES.LOGIN, component: { template: '<div />' } },
       {
@@ -35,7 +35,7 @@ export function makeRouter() {
 
 export function renderWithPlugins(
   component: Component,
-  options: RenderOptions = {},
+  options: RenderOptions<Component> = {},
 ) {
   const pinia = createPinia()
   const router = makeRouter()

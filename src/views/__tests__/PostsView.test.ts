@@ -15,7 +15,7 @@ function setup() {
   setActivePinia(pinia)
 
   const router = createRouter({
-    history: createMemoryHistory(),
+    history: createMemoryHistory('/'),
     routes: [
       { path: '/home/posts', name: ROUTE_NAMES.POSTS, component: PostsView },
       {
@@ -39,13 +39,15 @@ describe('PostsView', () => {
   it('renders a "Posts" heading', async () => {
     vi.spyOn(postsService, 'fetchPosts').mockResolvedValue([])
     const { pinia, router, vuetify } = setup()
+    await router.push('/home/posts')
     render(PostsView, { global: { plugins: [pinia, router, vuetify] } })
     expect(screen.getByText('Posts')).toBeInTheDocument()
   })
 
-  it('renders a "New Post" button', () => {
+  it('renders a "New Post" button', async () => {
     vi.spyOn(postsService, 'fetchPosts').mockResolvedValue([])
     const { pinia, router, vuetify } = setup()
+    await router.push('/home/posts')
     render(PostsView, { global: { plugins: [pinia, router, vuetify] } })
     expect(screen.getByRole('button', { name: /new post/i })).toBeInTheDocument()
   })
@@ -53,6 +55,7 @@ describe('PostsView', () => {
   it('calls postsStore.loadPosts on mount', async () => {
     const spy = vi.spyOn(postsService, 'fetchPosts').mockResolvedValue([])
     const { pinia, router, vuetify } = setup()
+    await router.push('/home/posts')
     render(PostsView, { global: { plugins: [pinia, router, vuetify] } })
 
     await waitFor(() => {
@@ -77,7 +80,8 @@ describe('PostsView', () => {
   it('reloads posts with new filters when PostsFilter emits change', async () => {
     const spy = vi.spyOn(postsService, 'fetchPosts').mockResolvedValue([])
     const { pinia, router, vuetify } = setup()
-    const { getByComponent } = render(PostsView, {
+    await router.push('/home/posts')
+    render(PostsView, {
       global: { plugins: [pinia, router, vuetify] },
     })
 
