@@ -11,17 +11,32 @@
       </v-col>
     </v-row>
 
+    <PostsFilter @change="onFilterChange" />
     <ThePosts />
   </v-container>
 </template>
 
 <script setup lang="ts">
-import ThePosts from '@/components/ThePosts.vue'
+import { onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import ThePosts from '@/components/ThePosts.vue'
+import PostsFilter from '@/components/PostsFilter.vue'
+import type { IPostFilter } from '@/interfaces/post'
+import { usePostsStore } from '@/stores/posts'
+import { ROUTE_NAMES } from '@/router/routes'
 
 const router = useRouter()
+const postsStore = usePostsStore()
+
+onMounted(() => {
+  postsStore.loadPosts()
+})
 
 const addPost = () => {
-  router.push({ name: 'form-post' })
+  router.push({ name: ROUTE_NAMES.FORM_POST })
+}
+
+const onFilterChange = (newFilters: IPostFilter) => {
+  postsStore.loadPosts(newFilters)
 }
 </script>

@@ -22,7 +22,7 @@ import { onBeforeMount, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import FormPost from '@/components/FormPost.vue'
 import type { IPost } from '@/interfaces/post'
-import { postEndpoint } from '@/services/api.endpoints'
+import { fetchPost } from '@/services/posts.service'
 
 const router = useRouter()
 const { params } = useRoute()
@@ -34,9 +34,7 @@ onBeforeMount(async () => {
   if (params.id) {
     fetchingPost.value = true
     try {
-      const response = await fetch(postEndpoint(params.id as string))
-      if (!response.ok) throw new Error(response.statusText)
-      post.value = await response.json()
+      post.value = await fetchPost(params.id as string)
     } catch {
       // handled by FormPost receiving null post
     } finally {
